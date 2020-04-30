@@ -20,8 +20,9 @@
           <div class="value">{{ubsSelected.download}} Mb/s &darr; {{ubsSelected.upload}} Mb/s &uarr;</div>
         </div>
       </div>
-      <div class="boxLine"><button (click)="startTest()" [disabled]="displayControls.disabledInput" mat-raised-button id="startButton">Iniciar Medição</button>
+      <div class="boxLine" *ngIf="!displayControls.disabledUBS"><button (click)="startTest()" [disabled]="displayControls.disabledInput" mat-raised-button id="startButton">Iniciar Medição</button>
       </div>
+      <div class="boxLine ubs-disabled" *ngIf="displayControls.disabledUBS">UBS já homologada!</div>
     </div>
   </div>
   <div class="mainItem" @fadein *ngIf="displayControls.displayDebug">

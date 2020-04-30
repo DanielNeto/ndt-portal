@@ -4,4 +4,5 @@ export interface UBS {
   state: string;
   download: string;
   upload: string;
+  frozen: boolean;
 }

@@ -5,13 +5,15 @@ import { UBS } from './ubs/ubs.model';
 import { Observable, throwError, empty } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { environment } from '../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class UbsService {
 
-  requestUrl = "https://medidor.rnp.br/ubs/";
-  saveUrl = "https://medidor.rnp.br/save";
+  requestUrl = environment.apiUbsUrl;
+  saveUrl = environment.apiDBUrl;
 
   constructor(private _http: HttpClient) { }
 

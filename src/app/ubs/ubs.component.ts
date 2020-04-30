@@ -33,7 +33,8 @@ export class UbsComponent implements OnInit, OnDestroy {
     'displayUBS': false,
     'displayDebug': false,
     'displayTest': false,
-    'disabledInput': false
+    'disabledInput': false,
+    'disabledUBS': false
   }
 
   private subscription: Subscription;
@@ -106,9 +107,11 @@ export class UbsComponent implements OnInit, OnDestroy {
 
   searchUbs(ubscode: string) {
     if (!this.isNumber(ubscode)) {
-      this.showErrorMsg("Código CNES inválido!");
+      this.showErrorMsg("Código CNES inválido!", 1500);
+      this.stateInit();
+      return;
     }
-    if (ubscode == '7654321') {
+    if (ubscode == environment.cnescodetest) {
       this.stateDebug();
       this.ubsId = ubscode;
     } else {
@@ -119,7 +122,7 @@ export class UbsComponent implements OnInit, OnDestroy {
   startTest() {
     if (this.debugMode()) {
       if (this.bwSelected === undefined || this.stateSelected === undefined) {
-        this.showErrorMsg("Estado e/ou Banda Contratada inválido!");
+        this.showErrorMsg("Estado e/ou Banda Contratada inválido!", 1500);
       } else {
         this.serverUrl = this.formatServerURL(this.stateSelected);
         this.userBw = this.bwSelected;
@@ -142,7 +145,11 @@ export class UbsComponent implements OnInit, OnDestroy {
         this.ubsSelected = { ...response.body };
         this.ubsSelected.description = this.toUpper(this.ubsSelected.description);
         this.ubsSelected.city = this.toUpper(this.ubsSelected.city);
-        this.stateUbs();
+        if (this.ubsSelected.frozen) {
+          this.stateUbsDisabled();
+        } else {
+          this.stateUbs();
+        }
         this.ubsId = ubsId;
         this.userBw = this.ubsSelected.download;
       } else {
@@ -150,7 +157,7 @@ export class UbsComponent implements OnInit, OnDestroy {
           console.log(response.status);
         }
         this.stateInit();
-        this.showErrorMsg("UBS não encontrada!");
+        this.showErrorMsg("UBS não encontrada! Caso o erro persista entre em contato (atendimentoUSF@rnp.br)", 5000);
       }
     },
       error => {
@@ -159,7 +166,7 @@ export class UbsComponent implements OnInit, OnDestroy {
         }
         if (error.status == 404) {
           this.stateInit();
-          this.showErrorMsg("UBS não encontrada!");
+          this.showErrorMsg("UBS não encontrada! Caso o erro persista entre em contato (atendimentoUSF@rnp.br)", 5000);
         }
       });
   }
@@ -175,6 +182,14 @@ export class UbsComponent implements OnInit, OnDestroy {
     this.displayControls.displayDebug = false;
     this.displayControls.displayTest = false;
     this.displayControls.disabledInput = false;
+    this.displayControls.disabledUBS = false;
+  }
+  stateUbsDisabled() {
+    this.displayControls.displayUBS = true;
+    this.displayControls.displayDebug = false;
+    this.displayControls.displayTest = false;
+    this.displayControls.disabledInput = false;
+    this.displayControls.disabledUBS = true;
   }
   stateDebug() {
     this.displayControls.displayUBS = false;
@@ -230,9 +245,9 @@ export class UbsComponent implements OnInit, OnDestroy {
     }
   }
 
-  showErrorMsg(msg: string) {
+  showErrorMsg(msg: string, time: number) {
     this._snackBar.open(msg, "", {
-      duration: 1500,
+      duration: time, //in milliseconds
       verticalPosition: 'top',
       panelClass: 'error-snack-bar'
     });

@@ -57,7 +57,7 @@ export class TesterComponent implements OnInit, OnDestroy {
     "uuidDownload": "",
     "uuidUpload": "",
     "ubsId": "",
-    "userBw": 0
+    "userBw": ""
   }
 
   getLabel: (value: number) => string;
@@ -72,7 +72,9 @@ export class TesterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.testFinished.emit(false);
     this.testValues.ubsId = this.ubsId;
-    this.testValues.userBw = this.userBw;
+    if (this.ubsId == environment.cnescodetest) {
+      this.testValues.userBw = this.userBw;
+    }
     this.testValues.startTime = Date.now();
     this.displayValues.maxDownload = Number(this.userBw) * 2; //it wont work if it goes beyond 2 times
     this.displayValues.maxUpload = Number(this.userBw) * 2;

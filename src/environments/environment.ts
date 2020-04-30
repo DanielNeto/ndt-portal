@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
-  debugging: true
+  debugging: true,
+  cnescodetest: '7654321',
+  apiUbsUrl: "https://teste.medidor.br/ubs/",
+  apiDBUrl: "https://teste.medidor.br/save"
 };
 
 /*

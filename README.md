@@ -28,6 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 
 ## Steps
+```shell
 npm install -g npm@latest
 npm install -g @angular/cli
 ng new ndt-portal
@@ -37,3 +38,4 @@ ng g c tester
 npm install --save angular-gauge
 ng g s ubs
 ng generate web-worker tester
+```

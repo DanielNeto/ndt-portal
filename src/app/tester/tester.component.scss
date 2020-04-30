@@ -1,0 +1,78 @@
+.gaugeGroup {
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.gaugeArea {
+  width:fit-content;
+  padding: 20px;
+  padding-bottom: 0;
+  position:relative;
+  //box-sizing:border-box;
+}
+
+div.gaugeArea div.gaugeName{
+  position:absolute;
+  top:0.1em; 
+  left:0;
+  width:100%;
+  font-size:1.8em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.statsGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.statsItem {
+  width: fit-content;
+  height: fit-content;
+  display: inline-block;
+  text-align: center;
+  margin: 10px 15px 0px 15px;
+}
+
+.statsName {
+  font-size: 1.6em;
+  font-weight: 500;
+  display: block;
+}
+
+.statsValue {
+  padding: 20px;
+  padding-right: 0.1em;
+  display: inline-block;
+  font-size: 2em;
+  color: #AA6060;
+}
+
+.statsUnit {
+  display: inline-block;
+  font-size: 1.2em;
+}
+
+.ipArea {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ipTitle {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 400;
+}
+
+.ipValue {
+  padding-left: 15px;
+  font-size: 1.6em;
+  font-weight: 500;
+}

@@ -1,0 +1,57 @@
+<div class="mainGrid">
+  <div class="mainItem">
+    <div class="boxTitle">Buscar Unidade de Saúde</div>
+    <div class="boxLine">
+      <mat-form-field><input matInput id="cnesCode" [(ngModel)]="cnes" #cnesCode placeholder="Código CNES" [readonly]="displayControls.disabledInput" (keyup.enter)="searchUbsOnEnter(cnesCode.value)">
+      </mat-form-field>
+    </div>
+    <div class="boxLine"><button (click)="searchUbsOnClick()" [disabled]="displayControls.disabledInput" mat-raised-button>Buscar</button></div>
+  </div>
+  <div class="mainItem" @fadein *ngIf="displayControls.displayUBS">
+    <div class="ubsBox">
+      <div class="ubs-name">{{ubsSelected.description}}</div>
+      <div class="ubs-content">
+        <div class="ubs-content-line">
+          <div class="key">Endereço:</div>
+          <div class="value">{{ubsSelected.city}} - {{ubsSelected.state}}</div>
+        </div>
+        <div class="ubs-content-line">
+          <div class="key">Banda Contratada:</div>
+          <div class="value">{{ubsSelected.download}} Mb/s &darr; {{ubsSelected.upload}} Mb/s &uarr;</div>
+        </div>
+      </div>
+      <div class="boxLine"><button (click)="startTest()" [disabled]="displayControls.disabledInput" mat-raised-button id="startButton">Iniciar Medição</button>
+      </div>
+    </div>
+  </div>
+  <div class="mainItem" @fadein *ngIf="displayControls.displayDebug">
+    <div class="ubsBox">
+      <div class="ubs-name">Teste</div>
+      <div class="debugGroup">
+        <div>
+          <mat-form-field class="debuginput">
+            <mat-label>Estado</mat-label>
+            <mat-select [disabled]="displayControls.disabledInput" [(ngModel)]="stateSelected">
+              <mat-option *ngFor="let state of states" [value]="state.value">
+                {{state.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field class="debuginput">
+            <mat-label>Banda Contratada</mat-label>
+            <input matInput id="bwinput" [readonly]="displayControls.disabledInput" [(ngModel)]="bwSelected">
+            <span matSuffix>&nbsp;Mb/s</span>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="boxLine">
+        <button (click)="startTest()" [disabled]="displayControls.disabledInput" mat-raised-button id="startButton">Iniciar Medição</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tester-container">
+  <app-tester [serverUrl]="serverUrl" [ubsId]="ubsId" [userBw]="userBw" (testFinished)="onTestFinished($event)" *ngIf="displayControls.displayTest" @fadein></app-tester>
+</div>

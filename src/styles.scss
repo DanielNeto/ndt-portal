@@ -1,1 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+mwl-gauge {
+  width: 250px;
+  height: 250px;
+  display: block;
+}
+mwl-gauge > .gauge > .dial {
+  stroke: #334455;
+  stroke-width: 3;
+  fill: rgba(0,0,0,0);
+}
+mwl-gauge > .gauge > .value {
+  stroke: #4cbb17;
+  stroke-width: 6;
+  fill: rgba(0,0,0,0);
+}
+mwl-gauge > .gauge > .value-text {
+  fill: #4cbb17;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+mwl-gauge.upload > .gauge > .value {
+  stroke: #ff7417;
+}
+mwl-gauge.upload > .gauge > .value-text {
+  fill: #ff7417;
+}
+
+.error-snack-bar {
+  color: white;
+  font-weight: 500;
+  background-color: #b90e0a;
+}

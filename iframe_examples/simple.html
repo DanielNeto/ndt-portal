@@ -1,0 +1,26 @@
+<html>
+<body>
+<iframe id="myFrame" src="https://medidor.rnp.br/simples/?state=rj" height="450" width="600" title="Iframe Example" style="margin: 0 auto; border:5px solid #3E50B4; display:block;"></iframe>
+<div id="message" style="margin: auto;text-align: center; padding:10px; font-size:20px;"></div>
+
+<script type="text/javascript">
+
+window.onload = function() {
+  var messageEle = document.getElementById('message');
+
+  function receiveMessage(message) {
+    console.log(message.data);
+    var msg = JSON.parse(message.data);
+    messageEle.innerHTML = '';
+
+    for (var key in msg) {
+        var div = document.createElement('div');
+        div.innerHTML = key + ' -> ' + msg[key];
+        messageEle.appendChild(div);
+    }
+  }
+  window.addEventListener('message', receiveMessage);
+}
+</script>
+</body>
+</html>

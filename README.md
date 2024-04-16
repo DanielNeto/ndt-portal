@@ -1,3 +1,5 @@
+PORTAL CENTRAL COM SELEÇÃO DE POPS - CODIGO ANGULAR COM WEBSOCKET MAS SEM O SERVIDOR NDT
+
 # NdtPortal
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.2.

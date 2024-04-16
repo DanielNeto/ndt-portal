@@ -1,0 +1,166 @@
+# Default server configuration
+#
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+        # return 301 https://$hostname:443/ndt7.html;
+	return 301 https://$host$request_uri;
+}
+server {
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+
+	ssl on;
+
+        ssl_certificate /certs/wildcardNovo_rnp.br.crt;
+        ssl_certificate_key /certs/wildcardNovo_rnp.br.key;
+
+	root /usr/share/nginx/html;
+	index index.html;
+
+	server_name medidor.rnp.br www.medidor.rnp.br;
+
+	location / {
+	    try_files $uri $uri/ =404;
+	}
+        
+        location /dashboard {
+	     proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+	     proxy_pass http://dashboard:8080/dashboard;
+        }
+
+	location /bidashboard {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/bidashboard;
+        }
+	
+	location /login {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/login;
+        }
+
+	location /login-error {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+	     proxy_pass http://dashboard:8080/login-error;
+        }
+
+	location /logout {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+	     proxy_pass http://dashboard:8080/logout;
+        }
+     
+        location /css/styles.css {
+             proxy_pass http://dashboard:8080/css/styles.css;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+             proxy_set_header X-Forwarded-Port $server_port;
+        }
+
+	location /js/scripts.js {
+             proxy_pass http://dashboard:8080/js/scripts.js;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+             proxy_set_header X-Forwarded-Port $server_port;
+        }
+
+	location /assets/demo/datatables-demo.js {
+             proxy_pass http://dashboard:8080/assets/demo/datatables-demo.js;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+             proxy_set_header X-Forwarded-Port $server_port;
+        }
+	
+	location /datatable {
+             proxy_pass http://dashboard:8080/datatable;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header X-Forwarded-Proto $scheme;
+             proxy_set_header X-Forwarded-Port $server_port;
+        }	
+        
+        location /save {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/ubs;
+        
+        }
+	
+	location /process {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/process;
+
+        }
+
+	location /ubs {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/usf;
+
+        }
+	
+	location /dashboard/bi {
+             proxy_set_header   Host $http_host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Server  $host;
+             proxy_set_header   X-Forwarded-Port  $server_port;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://dashboard:8080/bi;
+
+        }
+
+        location /simples {
+             proxy_set_header   Host $host;
+             proxy_set_header   X-Real-IP $remote_addr;
+             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+             proxy_set_header   X-Forwarded-Host  $host;
+             proxy_set_header   X-Forwarded-Proto $scheme;
+             proxy_pass http://ndt-iframe/;
+        }
+}

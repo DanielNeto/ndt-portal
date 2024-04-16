@@ -38,7 +38,8 @@ export class TesterComponent implements OnInit, OnDestroy {
     "latency": 0,
     "jitter": 0,
     "retransmissions": 0,
-    "clientIp": "0.0.0.0"
+    "clientIp": "0.0.0.0",
+    "testTime": ""
   }
 
   testValues: any = {
@@ -161,6 +162,8 @@ export class TesterComponent implements OnInit, OnDestroy {
       this.displayValues.clientIp = data.clientIp;
       this.testValues.clientPort = data.clientPort;
       this.testValues.serverIp = data.serverIp;
+
+      this.displayValues.testTime = new Date().toLocaleString('pt-BR') + " (UTC-3)";
 
       this.testValues.uuidUpload = data.uuid;
 

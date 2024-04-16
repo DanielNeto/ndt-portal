@@ -31,3 +31,7 @@
   <div class="ipTitle">IP do Cliente:</div>
   <div class="ipValue">{{displayValues.clientIp}}</div>
 </div>
+<div class="ipArea" *ngIf="showStats" @fadein>
+  <div class="ipTitle">Horário:</div>
+  <div class="ipValue">{{displayValues.testTime}}</div>
+</div>

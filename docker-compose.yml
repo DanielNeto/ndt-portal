@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  ndt-portal:
+    image: ndt-portal:1.0
+    build:
+      context: .
+    container_name: ndt-portal
+    restart: always
+    network_mode: "host"
+    tty: true
+    stdin_open: true
+    volumes:
+      - $PWD/certs:/certs:ro
+      - $PWD/nginx/default:/etc/nginx/sites-available/default:rw
+    environment:
+      TZ: "America/Sao_Paulo"
+      container: "docker"

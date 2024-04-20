@@ -1,3 +1,4 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
@@ -9,6 +10,6 @@
     "types": []
   },
   "include": [
-    "src/**/*.worker.ts"
+    "src/app/tester/tester.worker.ts"
   ]
 }

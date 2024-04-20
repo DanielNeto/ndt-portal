@@ -1,135 +1,124 @@
-import { Component, EventEmitter, OnInit, Input, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { trigger, transition, animate, style } from '@angular/animations';
-
-import { environment } from '../../environments/environment';
-import { UbsService } from '../ubs.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-tester',
+  standalone: true,
+  imports: [CommonModule, MatButtonModule],
   templateUrl: './tester.component.html',
   styleUrls: ['./tester.component.scss'],
   animations: [
-    trigger('fadein', [
+    trigger('fade', [
       transition('void => *', [
         style({ opacity: 0 }),
-        animate(500)
-      ]),
+        animate(1000)
+      ])
     ])
   ]
 })
-export class TesterComponent implements OnInit, OnDestroy {
+export class TesterComponent implements OnInit {
 
-  @Input() serverUrl: string;
-  @Input() ubsId: string;
-  @Input() userBw: string;
-  @Output() testFinished = new EventEmitter<boolean>();
-
-  private subscription: Subscription;
-
-  showStats: boolean;
+  //User input parameters
+  stateSelected: string = '';
+  serverURL: string = '';
+  quietMode: boolean = false;
+  
+  animations: boolean = true;
 
   displayValues: any = {
     "download": 0,
-    "maxDownload": 100,
     "upload": 0,
-    "maxUpload": 100,
     "latency": 0,
     "jitter": 0,
     "retransmissions": 0,
     "clientIp": "0.0.0.0",
+    "serverIp": "0.0.0.0",
     "testTime": ""
   }
 
-  testValues: any = {
-    "download": 0,
-    "upload": 0,
-    "latency": 0,
-    "jitter": 0,
-    "retransmissions": 0,
-    "segmentLoss": 0,
-    "clientIp": "",
-    "clientPort": "",
-    "serverIp": "",
-    "startTime": "",
-    "endTime": "",
-    "timestamp": "",
-    "uuidDownload": "",
-    "uuidUpload": "",
-    "ubsId": "",
-    "userBw": ""
+  displayControls: any = {
+    'showStats': false,
+    'showBasic': false,
+    'disabledButton': false
   }
 
-  getLabel: (value: number) => string;
+  states: Array<string> = [
+    'ac', 'al', 'ap', 'am', 'ba', 'ce', 'df', 'es', 'go',
+    'ma', 'mt', 'ms', 'mg', 'pa', 'pb', 'pr', 'pe', 'pi',
+    'rj', 'rn', 'rs', 'ro', 'rr', 'sc', 'sp', 'se', 'to'
+  ];
 
-  constructor(private ubsService: UbsService) {
-    this.getLabel = function (value: number): string {
-      return `${value} Mb/s`;
-    };
-    this.showStats = false;
+  constructor(private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    this.testFinished.emit(false);
-    this.testValues.ubsId = this.ubsId;
-    if (this.ubsId == environment.cnescodetest) {
-      this.testValues.userBw = this.userBw;
-    }
-    this.testValues.startTime = Date.now();
-    this.displayValues.maxDownload = Number(this.userBw) * 2; //it wont work if it goes beyond 2 times
-    this.displayValues.maxUpload = Number(this.userBw) * 2;
-    this.startTests();
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.route.queryParams
+      .subscribe(params => {
+        if (params['state'] !== undefined) {
+          console.log("State defined");
+          this.stateSelected = params['state'];
+        }
+        if (params['quiet'] !== undefined && params['quiet'].toLowerCase() == 'true') {
+          console.log("Quiet mode defined");
+          this.quietMode = true; 
+        }
+      });
   }
 
   startTests() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      const worker = new Worker('./tester.worker', { type: 'module' });
-      worker.onmessage = ({ data }) => {
+    if (this.states.includes(this.stateSelected)) {
+      this.serverURL = this.formatServerURL();
 
-        switch (data.cmd) {
-          case 'onprogress':
-            this.updateTestBW(data.type, data.data.Bytes, data.data.ElapsedTime);
-            break;
-          case 'onfinish':
-            this.updateFinalValues(data.type, data.data);
-            break;
-          case 'onerror':
-            console.error("ERROR", data.type);
-            break;
-          default:
-            break;
-        }
-        //console.log(data.cmd);
-      };
-      worker.postMessage(this.serverUrl);
+      if (typeof Worker !== 'undefined') {
+        // Create a new
+        const worker = new Worker(new URL('./tester.worker', import.meta.url));
+        worker.onmessage = ({ data }) => {
+
+          switch (data.cmd) {
+            case 'onstart':
+              this.resetStats();
+              this.stateStart();
+              this.displayValues.testTime = new Date().toLocaleString('pt-BR') + " (UTC-3)";
+              break;
+            case 'onprogress':
+              this.updateTestBW(data.type, data.data.Bytes, data.data.ElapsedTime);
+              //do something with bytes and time
+              break;
+            case 'onfinish':
+              this.updateFinalValues(data.type, data.data);
+              //do something with final values
+
+              break;
+            case 'onerror':
+              console.error("ERROR", data.type);
+              break;
+            default:
+              break;
+          }
+        };
+        worker.postMessage(this.serverURL);
+
+      } else {
+        // Web Workers are not supported in this environment.
+        // You should add a fallback so that your program still executes correctly.
+        console.error("Browser does not support Web Workers!");
+      }
     } else {
-      // Web Workers are not supported in this environment.
-      // You should add a fallback so that your program still executes correctly.
-      console.error("Browser does not support Web Workers!");
+      console.error("Server not found!");
     }
   }
 
   updateTestBW(test: string, bytes: number, time: number) {
 
-    let bw = (bytes * 8) / (time * 1000); //Mbps
-    if (environment.debugging) {
-      console.log("banda", test, bw, bytes, time);
-    }
+    let bw = (bytes * 8) / (time * 1000); //Mbps (time is in milliseconds)
 
     if (test === 'download') {
-      this.testValues.download = bw;
-      //this.displayValues.maxDownload = (bw > 100) ? this.formatNumber(bw) : 100; //doesnt work
       this.displayValues.download = this.formatNumber(bw);
     }
     if (test === 'upload') {
-      this.testValues.upload = bw;
-      //this.displayValues.maxUpload = (bw > 100) ? this.formatNumber(bw) : 100; //doesnt work
       this.displayValues.upload = this.formatNumber(bw);
     }
   }
@@ -137,49 +126,65 @@ export class TesterComponent implements OnInit, OnDestroy {
   updateFinalValues(test: string, data: any) {
 
     if (test === 'download') {
-      this.testValues.retransmissions = data.retransmissions;
       this.displayValues.retransmissions = this.formatNumber(data.retransmissions * 100);
-      this.testValues.segmentLoss = data.loss;
-      this.testValues.uuidDownload = data.uuid;
+      console.log("Download", data);
     }
-
     if (test === 'upload') {
-      if (environment.debugging) {
-        console.log("TIME", data.time);
-      }
-      this.testValues.endTime = Date.now();
-
-      this.testValues.upload = data.BW;
-      //this.displayValues.maxUpload = (data.BW > 100) ? this.formatNumber(data.BW) : 100; //doesnt work
-      this.displayValues.upload = this.formatNumber(data.BW);
-
-      this.testValues.latency = data.latency;
       this.displayValues.latency = this.formatNumber(data.latency);
-      this.testValues.jitter = data.jitter;
       this.displayValues.jitter = this.formatNumber(data.jitter);
-
-      this.testValues.clientIp = data.clientIp;
       this.displayValues.clientIp = data.clientIp;
-      this.testValues.clientPort = data.clientPort;
-      this.testValues.serverIp = data.serverIp;
+      this.displayValues.serverIp = data.serverIp + " (" + this.serverURL.split("/")[2].split(":")[0] + ")";
+      console.log("Upload", data);
 
-      this.displayValues.testTime = new Date().toLocaleString('pt-BR') + " (UTC-3)";
-
-      this.testValues.uuidUpload = data.uuid;
-
-      this.showStats = true;
-      this.testFinished.emit(true);
-
-      this.saveResultsDB();
+      this.stateEnd();
     }
   }
 
-  saveResultsDB() {
-    if (environment.debugging) {
-      console.log(this.testValues);
+  stateStart() {
+    this.displayControls.showBasic = true;
+    this.displayControls.showStats = false;
+    this.displayControls.disabledButton = true;
+  }
+
+  stateEnd() {
+    this.displayControls.showBasic = true;
+    if (!this.quietMode) {
+      this.displayControls.showStats = true;
     }
-    this.subscription = this.ubsService.saveResults(JSON.stringify(this.testValues)).pipe(take(1))
-      .subscribe(res => console.log("saved data"), err => console.log("also saved data"));
+    this.displayControls.disabledButton = false;
+    var parentWindow = window.parent;
+    if (window.parent != window.top) {
+      console.log("we are deeper than one down");
+    } else {
+      console.log("we are not deep");
+    }
+    parentWindow.postMessage(JSON.stringify({
+      banda_download: this.displayValues.download, 
+      banda_upload: this.displayValues.upload,
+      retransmissao: this.displayValues.retransmissions,
+      rtt: this.displayValues.latency,
+      jitter: this.displayValues.jitter,
+      ip_cliente: this.displayValues.clientIp,
+      ip_servidor: this.displayValues.serverIp,
+      horario: this.displayValues.testTime}), "*");
+  }
+
+  resetStats() {
+    this.displayValues.clientIp = "0.0.0.0";
+    this.displayValues.serverIp = "0.0.0.0";
+    this.displayValues.download = "0";
+    this.displayValues.upload = "0";
+    this.displayValues.latency = "0";
+    this.displayValues.jitter = "0";
+    this.displayValues.retransmissions = "0";
+    this.displayValues.testTime = "";
+  }
+
+  formatServerURL() {
+    let protocol: string = "https://";
+    let domain: string = ".medidor.rnp.br";
+    let port: string = ":4443";
+    return protocol.concat(this.stateSelected, domain, port);
   }
 
   formatNumber(d: number) {

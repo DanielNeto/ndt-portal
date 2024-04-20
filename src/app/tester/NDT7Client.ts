@@ -2,6 +2,7 @@ export class NDT7Client {
 
   private _baseUrl: URL;
   public _callbacks = {
+    'onstart': function (type: string) { return false; },
     'onprogress': function (type: string, data: any) { return false; },
     'onserverinfo': function (type: string, data: any) { return false; },
     'onfinish': function (type: string) { return false; },
@@ -27,6 +28,7 @@ export class NDT7Client {
 
   constructor(serverUrl: string, callbacks: any) {
     this._baseUrl = new URL(serverUrl);
+    this._baseUrl.port = (this._baseUrl.protocol === 'https:') ? '4443' : '8080'; //Server ports fixed
     this._baseUrl.protocol = (this._baseUrl.protocol === 'https:') ? 'wss:' : 'ws:';
 
     if (callbacks !== undefined) {
@@ -46,6 +48,7 @@ export class NDT7Client {
 
     sock.addEventListener("open", () => {
       testStart = Date.now();
+      this._callbacks.onstart('download');
     });
 
     sock.addEventListener("message", ({ data }) => {

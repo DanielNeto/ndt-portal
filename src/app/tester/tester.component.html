@@ -1,37 +1,47 @@
-<div class="gaugeGroup">
-  <div class="gaugeArea">
-    <div class="gaugeName" style="color: #4cbb17;">Download</div>
-    <mwl-gauge [max]="displayValues.maxDownload" [value]="displayValues.download" [label]="getLabel" [animated]="false"
-      [animationDuration]="0.5"></mwl-gauge>
+<div class="main-grid">
+  <div class="main-item" style="padding-top: 50px">
+    <button (click)="startTests()" [disabled]="displayControls.disabledButton" mat-fab id="startButton"
+      color="primary">Iniciar<br>Teste</button>
   </div>
-  <div class="gaugeArea">
-    <div class="gaugeName" style="color: #ff7417;">Upload</div>
-    <mwl-gauge class="upload" [max]="displayValues.maxUpload" [value]="displayValues.upload" [label]="getLabel"
-      [animated]="false" [animationDuration]="0.5"></mwl-gauge>
+  <div class="main-item" *ngIf="displayControls.showBasic" @fade>
+    <div class="bw-line">
+      <div class="bw-item">
+        <div class="download">{{displayValues.download}}</div>
+        <div class="unity">&nbsp;Mbps</div>
+      </div>
+      <div class="bw-item">
+        <div class="upload">{{displayValues.upload}}</div>
+        <div class="unity">&nbsp;Mbps</div>
+      </div>
+    </div>
   </div>
-</div>
-<div class="statsGroup" *ngIf="showStats" @fadein>
-  <div class="statsItem">
-    <div class="statsName">RTT</div>
-    <div class="statsValue">{{displayValues.latency}}</div>
-    <div class="statsUnit">ms</div>
+  <div class="statsGroup" *ngIf="displayControls.showStats" @fade>
+    <div class="statsItem">
+      <div class="statsName">RTT</div>
+      <div class="statsValue">{{displayValues.latency}}</div>
+      <div class="statsUnit">ms</div>
+    </div>
+    <div class="statsItem">
+      <div class="statsName">Jitter</div>
+      <div class="statsValue">{{displayValues.jitter}}</div>
+      <div class="statsUnit">ms</div>
+    </div>
+    <div class="statsItem">
+      <div class="statsName">Retransmissão</div>
+      <div class="statsValue">{{displayValues.retransmissions}}</div>
+      <div class="statsUnit">%</div>
+    </div>
   </div>
-  <div class="statsItem">
-    <div class="statsName">Jitter</div>
-    <div class="statsValue">{{displayValues.jitter}}</div>
-    <div class="statsUnit">ms</div>
+  <div class="ipArea" *ngIf="displayControls.showStats" @fade>
+    <div class="ipTitle">IP do Cliente:</div>
+    <div class="ipValue">{{displayValues.clientIp}}</div>
   </div>
-  <div class="statsItem">
-    <div class="statsName">Retransmissão</div>
-    <div class="statsValue">{{displayValues.retransmissions}}</div>
-    <div class="statsUnit">%</div>
+  <div class="ipArea" *ngIf="displayControls.showStats" @fade>
+    <div class="ipTitle">IP do Servidor:</div>
+    <div class="ipValue">{{displayValues.serverIp}}</div>
   </div>
-</div>
-<div class="ipArea" *ngIf="showStats" @fadein>
-  <div class="ipTitle">IP do Cliente:</div>
-  <div class="ipValue">{{displayValues.clientIp}}</div>
-</div>
-<div class="ipArea" *ngIf="showStats" @fadein>
-  <div class="ipTitle">Horário:</div>
-  <div class="ipValue">{{displayValues.testTime}}</div>
+  <div class="ipArea" *ngIf="displayControls.showStats" @fade>
+    <div class="ipTitle">Horário:</div>
+    <div class="ipValue">{{displayValues.testTime}}</div>
+  </div>
 </div>
